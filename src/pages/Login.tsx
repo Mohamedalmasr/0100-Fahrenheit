@@ -43,6 +43,8 @@ const Login: React.FC = () => {
       setLoading(true);
 
       console.log("login submit", { email, password });
+      localStorage.setItem("hasLoggedIn", "true");
+      window.dispatchEvent(new Event("auth-state-change"));
 
     } catch (err) {
       setError("Something went wrong while signing in. Please try again.");
