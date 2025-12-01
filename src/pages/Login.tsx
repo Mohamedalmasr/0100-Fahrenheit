@@ -12,6 +12,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Eye, EyeOff } from "lucide-react";
+import { useUser } from "@/lib/user-context";
 
 const Login: React.FC = () => {
   const [email, setEmail] = React.useState("");
@@ -19,6 +20,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
+  const { login } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +45,8 @@ const Login: React.FC = () => {
       setLoading(true);
 
       console.log("login submit", { email, password });
-      localStorage.setItem("hasLoggedIn", "true");
-      window.dispatchEvent(new Event("auth-state-change"));
+      const nameFromEmail = email.split("@")[0] || "User";
+      login({ name: nameFromEmail, email });
 
     } catch (err) {
       setError("Something went wrong while signing in. Please try again.");
@@ -75,6 +77,7 @@ const Login: React.FC = () => {
                 placeholder="you@example.com"
                 className="bg-white"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -89,6 +92,7 @@ const Login: React.FC = () => {
                   placeholder="••••••••"
                   className="bg-white pr-10"
                   required
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />

@@ -1,7 +1,17 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus, Menu, X } from "lucide-react";
+import { LogIn, UserPlus, Menu, X, LogOut, ChevronDown } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useUser } from "@/lib/user-context";
 
 const navLinks = [
   { path: "/", label: "Home" },
@@ -12,7 +22,58 @@ const navLinks = [
   { path: "/contact", label: "Contact" },
 ];
 
+const UserNav = () => {
+  const { user, logout } = useUser();
+  if (!user) return null;
+
+  const initials =
+    user.name?.trim().charAt(0).toUpperCase() ||
+    user.email.trim().charAt(0).toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button className="inline-flex items-center gap-2 rounded-full border border-emerald-100 bg-white px-2 py-1.5 text-sm font-medium text-slate-800 shadow-sm hover:border-emerald-300 hover:text-emerald-700">
+          <Avatar className="h-8 w-8 border border-emerald-100">
+            <AvatarImage alt={user.name} />
+            <AvatarFallback>{initials}</AvatarFallback>
+          </Avatar>
+          <span className="hidden text-left leading-tight sm:block">
+            <span className="block text-xs text-slate-500">Signed in</span>
+            <span className="block text-sm font-semibold text-slate-900">
+              {user.name}
+            </span>
+          </span>
+          <ChevronDown className="h-4 w-4 text-slate-500" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-slate-900">
+              {user.name}
+            </span>
+            <span className="text-xs text-slate-500">{user.email}</span>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="flex items-center gap-2 text-sm text-slate-800"
+          onSelect={(event) => {
+            event.preventDefault();
+            logout();
+          }}
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 const Navbar: React.FC = () => {
+  const { user } = useUser();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const closeMenu = () => setIsOpen(false);
@@ -55,33 +116,44 @@ const Navbar: React.FC = () => {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="flex items-center gap-2 text-xs sm:text-sm text-slate-700 hover:text-emerald-700"
-          >
-            <Link to="/login">
-              <LogIn className="h-4 w-4" />
-              <span>Login</span>
-            </Link>
-          </Button>
+          {user ? (
+            <>
+              <UserNav />
+              <Button asChild className="text-xs sm:text-sm">
+                <Link to="/contact">Book a Discovery Call</Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="ghost"
+                size="sm"
+                className="flex items-center gap-2 text-xs sm:text-sm text-slate-700 hover:text-emerald-700"
+              >
+                <Link to="/login">
+                  <LogIn className="h-4 w-4" />
+                  <span>Login</span>
+                </Link>
+              </Button>
 
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 border-emerald-200 text-xs sm:text-sm text-emerald-700 hover:bg-emerald-50"
-          >
-            <Link to="/signup">
-              <UserPlus className="h-4 w-4" />
-              <span>Sign up</span>
-            </Link>
-          </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 border-emerald-200 text-xs sm:text-sm text-emerald-700 hover:bg-emerald-50"
+              >
+                <Link to="/signup">
+                  <UserPlus className="h-4 w-4" />
+                  <span>Sign up</span>
+                </Link>
+              </Button>
 
-          <Button asChild className="text-xs sm:text-sm">
-            <Link to="/contact">Book a Discovery Call</Link>
-          </Button>
+              <Button asChild className="text-xs sm:text-sm">
+                <Link to="/contact">Book a Discovery Call</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -121,39 +193,56 @@ const Navbar: React.FC = () => {
           ))}
 
           <div className="mt-2 flex flex-wrap gap-2">
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="flex-1 justify-center gap-2 text-xs text-slate-700 hover:text-emerald-700"
-            >
-              <Link to="/login" onClick={closeMenu}>
-                <LogIn className="h-4 w-4" />
-                <span>Login</span>
-              </Link>
-            </Button>
+            {user ? (
+              <div className="w-full">
+                <UserNav />
+                <Button
+                  asChild
+                  size="sm"
+                  className="mt-2 w-full justify-center gap-2 text-xs text-slate-700 hover:text-emerald-700"
+                >
+                  <Link to="/contact" onClick={closeMenu}>
+                    Book a Discovery Call
+                  </Link>
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="flex-1 justify-center gap-2 text-xs text-slate-700 hover:text-emerald-700"
+                >
+                  <Link to="/login" onClick={closeMenu}>
+                    <LogIn className="h-4 w-4" />
+                    <span>Login</span>
+                  </Link>
+                </Button>
 
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="flex-1 justify-center gap-2 border-emerald-200 text-xs text-emerald-700 hover:bg-emerald-50"
-            >
-              <Link to="/signup" onClick={closeMenu}>
-                <UserPlus className="h-4 w-4" />
-                <span>Sign up</span>
-              </Link>
-            </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 justify-center gap-2 border-emerald-200 text-xs text-emerald-700 hover:bg-emerald-50"
+                >
+                  <Link to="/signup" onClick={closeMenu}>
+                    <UserPlus className="h-4 w-4" />
+                    <span>Sign up</span>
+                  </Link>
+                </Button>
 
-            <Button
-              asChild
-              size="sm"
-              className="mt-1 w-full justify-center text-xs"
-            >
-              <Link to="/contact" onClick={closeMenu}>
-                Book a Discovery Call
-              </Link>
-            </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className="mt-1 w-full justify-center text-xs"
+                >
+                  <Link to="/contact" onClick={closeMenu}>
+                    Book a Discovery Call
+                  </Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>

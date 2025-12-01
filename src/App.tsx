@@ -12,33 +12,18 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";    
 import Signup from "./pages/Signup"; 
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/lib/user-context";
 
 const AuthPromptBar = () => {
-  const [isAuthed, setIsAuthed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("hasLoggedIn") === "true";
-  });
+  const { user } = useUser();
   const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const syncAuth = () => {
-      setIsAuthed(localStorage.getItem("hasLoggedIn") === "true");
-    };
-
-    window.addEventListener("storage", syncAuth);
-    window.addEventListener("auth-state-change", syncAuth);
-    return () => {
-      window.removeEventListener("storage", syncAuth);
-      window.removeEventListener("auth-state-change", syncAuth);
-    };
-  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setIsVisible(true), 120);
     return () => clearTimeout(timer);
   }, []);
 
-  if (isAuthed) return null;
+  if (user) return null;
 
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-80 flex justify-center px-4 pb-4 sm:pb-6">

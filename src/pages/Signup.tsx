@@ -72,6 +72,7 @@ const Signup: React.FC = () => {
                 placeholder="Alex Smith"
                 className="bg-white"
                 required
+                autoComplete="name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -86,6 +87,7 @@ const Signup: React.FC = () => {
                 placeholder="you@example.com"
                 className="bg-white"
                 required
+                autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -96,14 +98,15 @@ const Signup: React.FC = () => {
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="bg-white pr-10"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="bg-white pr-10"
+                required
+                autoComplete="new-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
@@ -127,14 +130,15 @@ const Signup: React.FC = () => {
               <Label htmlFor="confirmPassword">Confirm password</Label>
               <div className="relative">
                 <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="bg-white pr-10"
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="••••••••"
+                className="bg-white pr-10"
+                required
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
                 <button
                   type="button"
                   onClick={() =>
